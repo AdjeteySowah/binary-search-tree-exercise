@@ -68,78 +68,47 @@ function createTree(array) {
   }
 
   function deleteItem(value) {
-    let current = root;
-    let parentOfCurrentNode;
+    if (!root) return false;
 
-    function traverse(current) {
-      if (current) {
-        if (value > current.value) {
-          if (current.right) {
-            parentOfCurrentNode = current;
-            current = current.right;
-            return traverse(current);
-          } else {
-            return false;
-          }
-        } else if (value < current.value) {
-          if (current.left) {
-            parentOfCurrentNode = current;
-            current = current.left;
-            return traverse(current);
-          } else {
-            return false;
-          }
-        } else if (value === current.value) {
-          if (current.left && current.right) {
-            function getLeftmostNodeWithParent(startingNode) {
-              let parent = null;
-              let node = startingNode;
-              while (node.left) {
-                parent = startingNode;
-                node = startingNode.left;
-              }
-              return { node, parent };
-            }
-            const { node: leftmostNode, parent } = getLeftmostNodeWithParent(current.right);
-
-            if (leftmostNode !== current.right && leftmostNode.right) {
-              current.right.left = leftmostNode.right;
-            } else if (leftmostNode !== current.right) {
-              current.right.left = null;
-            } else if (leftmostNode === current.right && parent !== current.right) {
-              parent.left = null;
-            }
-            leftmostNode.left = current.left;
-            leftmostNode.right = current.right;
-            current = leftmostNode;
-            return true;
-          } else if (current.left || current.right) {
-            if (current.left) {
-              if (parentOfCurrentNode && parentOfCurrentNode.left === current) {
-                parentOfCurrentNode.left = current.left;
-              } else if (parentOfCurrentNode && parentOfCurrentNode.right === current) {
-                parentOfCurrentNode.right = current.left;
-              }
-            } else if (current.right) {
-              if (parentOfCurrentNode && parentOfCurrentNode.left === current) {
-                parentOfCurrentNode.left = current.right;
-              } else if (parentOfCurrentNode && parentOfCurrentNode.right === current) {
-                parentOfCurrentNode.right = current.right;
-              }
-            }
-            return true;
-          } else if (current.left === null && current.right === null) {
-            current = null;
-            return true;
-          }
-        }
-      } else {
-        return false;
-      }
+    let parent = null;
+    let node = root;
+    while (node && node.value !== value) {
+      parent = node;
+      node = value < node.value ? node.left : node.right;
     }
 
-    return traverse(current);
+    if (!node) return false; // not found
+
+    // If node has two children
+    if (node.left && node.right) {
+      let succParent = node;
+      let succ = node.right;
+      while (succ.left) {
+        succParent = succ;
+        succ = succ.left;
+      }
+      // copy successor value into node
+      node.value = succ.value;
+      // now delete succ
+      parent = succParent;
+      node = succ;
+    }
+
+    // Now node has at most one child
+    const child = node.left || node.right;
+
+    if (!parent) {
+      // node to be removed is root, so parent is null
+      root = child;
+    } else if (parent.left === node) {
+      parent.left = child;
+    } else {
+      parent.right = child;
+    }
+
+    return true;
   }
+
 
   return { 
     getRoot() { return root },
