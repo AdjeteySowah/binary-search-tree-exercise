@@ -109,11 +109,57 @@ function createTree(array) {
     return true;
   }
 
+  function find(value) {
+    if (!root) return null;
+    let current = root;
+
+    while (current.value !== value) {
+      current = value < current.value ? current.left : current.right;
+    }
+    return current;
+  }
+
+  function levelOrderForEach(callback) {
+    if (typeof callback !== 'function') {
+      throw new Error('Expected a callback function as an argument for levelOrderForEach()');
+    }
+    if (!root) return null;
+
+    const levelOrderTraversalValues = [];
+    const queue = [];
+    let idx = 0;
+    queue.push(root);
+
+    while (idx < queue.length) {
+      // for better performance, dequeuing by advancing an index is preferred to array.shift()
+      const current = queue[idx++];
+      const result = callback(current);
+      levelOrderTraversalValues.push(result);
+      if (current.left) queue.push(current.left);
+      if (current.right) queue.push(current.right);
+    }
+
+    return levelOrderTraversalValues;
+  }
+
+  // function inOrderForEach(callback) {
+    
+  // }
+
+  // function preOrderForEach(callback) {
+
+  // }
+
+  // function postOrderForEach(callback) {
+
+  // }
 
   return { 
     getRoot() { return root },
     prettyPrint,
     insert,
     deleteItem,
+    find,
+    levelOrderForEach,
   };
 }
