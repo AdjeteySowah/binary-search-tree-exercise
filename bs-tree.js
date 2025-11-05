@@ -123,7 +123,7 @@ function createTree(array) {
     if (typeof callback !== 'function') {
       throw new Error('Expected a callback function as an argument for levelOrderForEach()');
     }
-    if (!root) return null;
+    if (!root) return [];
 
     const levelOrderTraversalValues = [];
     const queue = [];
@@ -142,17 +142,94 @@ function createTree(array) {
     return levelOrderTraversalValues;
   }
 
-  // function inOrderForEach(callback) {
-    
-  // }
+  function preOrderForEach(callback) {
+    if (typeof callback !== 'function') {
+      throw new Error('Expected a callback function as an argument for preOrderForEach()');
+    }
+    if (!root) return [];
 
-  // function preOrderForEach(callback) {
+    const preOrderTraversalValues = [];
 
-  // }
+    function traverse(node) {
+      if (!node) return;    // when node.child is null
+      const result = callback(node);
+      preOrderTraversalValues.push(result);
+      traverse(node.left);
+      traverse(node.right);
+    }
 
-  // function postOrderForEach(callback) {
+    traverse(root);
+    return preOrderTraversalValues;
+  }
 
-  // }
+  function inOrderForEach(callback) {
+    if (typeof callback !== 'function') {
+      throw new Error('Expected a callback function as an argument for inOrderForEach()');
+    }
+    if (!root) return [];
+
+    const inOrderTraversalValues = [];
+
+    function traverse(node) {
+      if (!node) return;
+      traverse(node.left);
+      const result = callback(node);
+      inOrderTraversalValues.push(result);
+      traverse(node.right);
+    }
+
+    traverse(root);
+    return inOrderTraversalValues;
+  }
+
+  function postOrderForEach(callback) {
+    if (typeof callback !== 'function') {
+      throw new Error('Expected a callback function as an argument for postOrderForEach()');
+    }
+    if (!root) return [];
+
+    const postOrderTraversalValues = [];
+
+    function traverse(node) {
+      if (!node) return;
+      traverse(node.left);
+      traverse(node.right);
+      const result = callback(node);
+      postOrderTraversalValues.push(result);
+    }
+
+    traverse(root);
+    return postOrderTraversalValues;
+  }
+
+  function height(value) {
+    if (!root) return null;
+
+    function traverse(node) {
+      if (value > node.value) {
+        return node.right ? traverse(node.right) : null;
+      } else if (value < node.value) {
+        return node.left ? traverse(node.left) : null;
+      } else { // value === node.value
+        return node;
+      }
+    }
+
+    const targetNode = traverse(root);
+    if (!targetNode) return null; // value not found
+
+    function findHeight(node) {
+      if (!node) return -1;
+      return Math.max(findHeight(node.left), findHeight(node.right)) + 1;
+    }
+
+    return findHeight(targetNode);
+  }
+
+  function depth(value) {
+
+  }
+
 
   return { 
     getRoot() { return root },
@@ -161,5 +238,10 @@ function createTree(array) {
     deleteItem,
     find,
     levelOrderForEach,
+    preOrderForEach,
+    inOrderForEach,
+    postOrderForEach,
+    height,
+    depth,
   };
 }
