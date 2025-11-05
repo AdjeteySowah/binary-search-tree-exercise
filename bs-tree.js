@@ -307,6 +307,11 @@ function createTree(array) {
     return true;
   }
 
+  function rebalance() {
+    const newArrayForTreeBuilding = levelOrderForEach((node) => node.value);
+    root = buildTree(newArrayForTreeBuilding);
+  }
+
   return { 
     getRoot() { return root },
     prettyPrint,
