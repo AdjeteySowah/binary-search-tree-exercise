@@ -247,10 +247,39 @@ function createTree(array) {
     return null;    // if value is not found in tree
   }
 
+    function computeHeights(root) {
+      const heights = new WeakMap();
+      if (!root) return heights; // empty map
+
+      const stack = [{ node: root, visited: false }];
+
+      while (stack.length) {
+        const { node, visited } = stack.pop();
+
+        if (!visited) {
+          stack.push({ node, visited: true });
+          if (node.right) stack.push({ node: node.right, visited: false });
+          if (node.left)  stack.push({ node: node.left,  visited: false });
+        } else {
+          const leftH  = node.left  ? heights.get(node.left)  : -1;
+          const rightH = node.right ? heights.get(node.right) : -1;
+
+          if (node.left && leftH === undefined)  throw new Error("Missing left height");
+          if (node.right && rightH === undefined) throw new Error("Missing right height");
+
+          heights.set(node, Math.max(leftH, rightH) + 1);
+        }
+      }
+
+      return heights;
+    }
+
+
   function isBalanced() {
     if (!root) return true;   // an empty tree is balanced
     
-    let isBalanced = true;
+    const heights = computeHeights(root);
+
     const queue = [];
     let idx = 0;
     queue.push(root);
@@ -258,25 +287,24 @@ function createTree(array) {
     while (idx < queue.length) {
       const current = queue[idx++];
 
-                                          // an empty/null node has a height of -1
-      let l = current.left ? height(current.left.value) : -1;
-      let r = current.right ? height(current.right.value) : -1;
+      const l = current.left  ? heights.get(current.left)  : -1;
+      const r = current.right ? heights.get(current.right) : -1;
+      
+      // if a child's height is missing, treat as unbalanced (shouldn't happen)
+      if (current.left && l === undefined) return false;
+      if (current.right && r === undefined) return false;
+
       let heightDifference = Math.max(l,r) - Math.min(l,r);
 
-      if (heightDifference === 0 || heightDifference === 1) {
+      if (heightDifference <= 1) {
         if (current.left) queue.push(current.left);
         if (current.right) queue.push(current.right);
       } else {
-        isBalanced = false;
-        return isBalanced;
+        return false;
       }
     }
 
-    return isBalanced;
-  }
-
-  function rebalance() {
-
+    return true;
   }
 
   return { 
@@ -292,5 +320,6 @@ function createTree(array) {
     height,
     depth,
     isBalanced,
+    rebalance,
   };
 }
