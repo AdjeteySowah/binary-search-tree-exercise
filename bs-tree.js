@@ -227,9 +227,57 @@ function createTree(array) {
   }
 
   function depth(value) {
+    if (!root) return null;
 
+    let current = root;
+    let depthCount = 0;
+
+    while (current) {
+      if (value === current.value) {
+        return depthCount;
+      } else if (value > current.value) {
+        current = current.right;
+        depthCount++;
+      } else if (value < current.value) {
+        current = current.left;
+        depthCount++;
+      }
+    }
+
+    return null;    // if value is not found in tree
   }
 
+  function isBalanced() {
+    if (!root) return true;   // an empty tree is balanced
+    
+    let isBalanced = true;
+    const queue = [];
+    let idx = 0;
+    queue.push(root);
+
+    while (idx < queue.length) {
+      const current = queue[idx++];
+
+                                          // an empty/null node has a height of -1
+      let l = current.left ? height(current.left.value) : -1;
+      let r = current.right ? height(current.right.value) : -1;
+      let heightDifference = Math.max(l,r) - Math.min(l,r);
+
+      if (heightDifference === 0 || heightDifference === 1) {
+        if (current.left) queue.push(current.left);
+        if (current.right) queue.push(current.right);
+      } else {
+        isBalanced = false;
+        return isBalanced;
+      }
+    }
+
+    return isBalanced;
+  }
+
+  function rebalance() {
+
+  }
 
   return { 
     getRoot() { return root },
@@ -243,5 +291,6 @@ function createTree(array) {
     postOrderForEach,
     height,
     depth,
+    isBalanced,
   };
 }
