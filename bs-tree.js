@@ -2,7 +2,7 @@ function createNode(value) {
   return { value, left: null, right: null };
 }
 
-function createTree(array) {
+export function createTree(array) {
   let root = buildTree(array);
 
   function prettyPrint(node, prefix = '', isLeft = true) {
