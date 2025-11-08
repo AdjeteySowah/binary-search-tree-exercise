@@ -219,7 +219,7 @@ export function createTree(array) {
     if (!targetNode) return null; // value not found
 
     function findHeight(node) {
-      if (!node) return -1;
+      if (!node) return -1;   // when node.child is null
       return Math.max(findHeight(node.left), findHeight(node.right)) + 1;
     }
 
